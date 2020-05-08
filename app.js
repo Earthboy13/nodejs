@@ -21,11 +21,26 @@ const server = http.createServer((req, res) => {
     }
     if (url === '/message' && method == 'POST')
     {   
-        fs.writeFileSync('mesaage.txt','Filler');
-        res.statusCode = 302;
-        res.setHeader('Location','/');
-        return res.end();
+        const body = [];
+        req.on('data',(chuck) => {
+            console.log(chuck);
+            body.push(chuck);
+        });
+        
+        return req.on('end', () => {
+            const pasredBody = Buffer.concat(body).toString();
+            //console.log(pasredBody); 
+            const input = pasredBody.split('=')[1];
+            fs.writeFile('mesaage.txt', input, () => {
+                res.statusCode = 302;
+                res.setHeader('Location', '/');
+                return res.end();
+            });
         //res.writeHead()
+        } );
+        
+        
+        
     }
     res.setHeader('Content-Type', 'text/html');
     res.write('<html>');
