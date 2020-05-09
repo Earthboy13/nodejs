@@ -1,6 +1,6 @@
 const http = require('http');
 
-const routes = require('./assign1');
+const routes = require('./routes');
 //function rqListener(req, res)
 //http.createServer(rqListener);
 // http.createServer(function rqListener(req, res){});

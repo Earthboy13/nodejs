@@ -32,7 +32,7 @@ const requestHandler = (req, res) => {
     if (url === '/submit' && method == 'POST') {
         const body = [];
         req.on('data', (chuck) => {
-            console.log(chuck);
+            //console.log(chuck);
             body.push(chuck);
         });
 
@@ -55,7 +55,7 @@ const requestHandler = (req, res) => {
         filePath = path.join(__dirname, 'user.txt');
         fs.readFile(filePath, { encoding: 'utf-8' }, (err, data) => {
             if(!err){
-            console.log(data);
+            //console.log(data);
             res.statusCode = 200;
             res.setHeader('Content-Type', 'text/html');
             res.write('<html>');
