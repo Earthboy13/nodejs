@@ -13,7 +13,13 @@ router.get('/', (req, res, next) => {
     //res.sendFile(filePath);
     const products = adminData.products;
     res.render('shop', {
-        prods: products, docTitle: 'My Shop', path: '/'});
+        prods: products, 
+        docTitle: 'My Shop', 
+        path: '/', 
+        hasProducts: products.length > 0,
+        productCSS: true, 
+        activeShop: true 
+    });
 });
 
 exports.routes = router

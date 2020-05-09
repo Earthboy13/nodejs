@@ -5,13 +5,20 @@ const express = require('express'),
       bodyParser = require('body-parser'), 
       adminData = require('./routes/admin'), 
       shopData = require('./routes/shop'),
-      rootDir = require('./util/path');
+      rootDir = require('./util/path'),
+      expressHbs = require('express-handlebars');
 //function rqListener(req, res)
 //http.createServer(rqListener);
 // http.createServer(function rqListener(req, res){});
 
 const app = express();
-app.set('view engine', 'pug');
+// hbs -> handlebars
+app.engine('hbs', expressHbs({
+    layoutsDir: 'views/layouts/', 
+    defaultLayout: 'main-layout', 
+    extname: 'hbs'
+}));
+app.set('view engine', 'hbs');
 app.set('views', 'views');
 
 app.use(bodyParser.urlencoded({extended: false}));
