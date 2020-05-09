@@ -1,21 +1,19 @@
 //const http = require('http');
 
 const express = require('express');
+const bodyParser = require('body-parser');
+const adminRoutes = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
 //function rqListener(req, res)
 //http.createServer(rqListener);
 // http.createServer(function rqListener(req, res){});
 
 const app = express();
 
-app.use('/add-product', (req, res, next) => {
-    console.log('In the next middle');
-    res.send('<p>Add Product</p>');
-});
+app.use(bodyParser.urlencoded({extended: false}));
 
-app.use('/',(req, res, next) => {
-    console.log('In the next middle');
-    res.send('<p>Hi</p>');
-});
+app.use(adminRoutes);
+app.use(shopRoutes);
 
 app.listen(8080);
 
