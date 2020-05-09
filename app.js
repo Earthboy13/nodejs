@@ -3,8 +3,8 @@
 const express = require('express'), 
       path = require('path'), 
       bodyParser = require('body-parser'), 
-      adminRoutes = require('./routes/admin'), 
-      shopRoutes = require('./routes/shop'),
+      adminData = require('./routes/admin'), 
+      shopData = require('./routes/shop'),
       rootDir = require('./util/path');
 //function rqListener(req, res)
 //http.createServer(rqListener);
@@ -14,8 +14,8 @@ const app = express();
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(rootDir, 'public')));
-app.use("/admin",adminRoutes);
-app.use(shopRoutes);
+app.use("/admin", adminData.routes);
+app.use(shopData.routes);
 
 app.use((req, res, next) => {
     filePath = path.join(rootDir, 'views', '404.html');
