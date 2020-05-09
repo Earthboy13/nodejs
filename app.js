@@ -1,9 +1,11 @@
 //const http = require('http');
 
-const express = require('express');
-const bodyParser = require('body-parser');
-const adminRoutes = require('./routes/admin');
-const shopRoutes = require('./routes/shop');
+const express = require('express'), 
+      path = require('path'), 
+      bodyParser = require('body-parser'), 
+      adminRoutes = require('./routes/admin'), 
+      shopRoutes = require('./routes/shop'),
+      rootDir = require('./util/path');
 //function rqListener(req, res)
 //http.createServer(rqListener);
 // http.createServer(function rqListener(req, res){});
@@ -16,8 +18,8 @@ app.use("/admin",adminRoutes);
 app.use(shopRoutes);
 
 app.use((req, res, next) => {
-    
-    res.status(404).send('<h1>Error 404: Page Not Found!</h1>');
+    filePath = path.join(rootDir, 'views', '404.html');
+    res.status(404).sendFile(filePath);
 });
 
 app.listen(8080);
