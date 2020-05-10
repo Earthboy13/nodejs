@@ -14,75 +14,78 @@ exports.postAddProduct = (req, res, next) => {
         price = req.body.price,
         description = req.body.description;
     const product = new Product(title, imgUrl, description, price);
-    product.save();
-    res.status(201).redirect('/products');
+    product.save()
+        .then(result => {
+            console.log(result[0]);
+            res.status(201).redirect('/admin/products')
+        }).catch(err => {
+            console.log(err);
+        });
 }
 
-exports.getEditProduct = (req, res, next) => {
-    Product.fetchAll(products => {
-        //console.log(req.params.id);
-        let found = false;
-        products.forEach(prod => {
-            console.log(prod);
-            if (prod.id == req.params.id) {
-                console.log('found' + prod);
+exports.getEditProduct = (req, res, next) => {  
+    Product.findById(req.params.id).then(([prod]) => {
+            //console.log(req.params.id);
+                console.log(prod[0]);
                 found = true;
                 res.render('admin/edit-product', {
-                    product: prod,
+                    product: prod[0],
                     docTitle: 'Edit Product',
                     path: ''
                 });
-            }
-        });
-        if (!found) {
-            next();
-        }
+
+    }).catch(err => {
+        console.log(err);
     });
 }
 
 exports.postEditProduct = (req, res, next) => {
-
     Product.edit(req.body.title,
         req.body.imgUrl,
         req.body.description,
         req.body.price,
-        req.params.id);
-
-    res.status(202).redirect('/admin/products/' + req.params.id);
+        req.params.id).then(result => {
+            console.log(result[0]);
+            res.status(202).redirect('/admin/products/' + req.params.id);
+        }).catch(err => {
+            console.log(err);
+        });
 }
 
 exports.getProduct = (req, res, next) => {
-
-    Product.findById(req.params.id, prod => {
+    Product.findById(req.params.id).then(([prod, sysData])=> {
         //console.log(req.params.id);
-        console.log(prod);
+        console.log(prod[0]);
+
         res.render('shop/product-detail', {
-            product: prod,
+            product: prod[0],
             docTitle: 'Shop',
             path: '/products'
         });
 
+    }).catch(err => {
+        console.log(err);
     });
-
 }
 
 exports.getAdminProduct = (req, res, next) => {
-    Product.findById(req.params.id, prod => {
+    Product.findById(req.params.id).then(([prod, sysData]) => {
         //console.log(req.params.id);
-        console.log(prod);
+        console.log(prod[0]);
 
         res.render('admin/product-detail', {
-            product: prod,
+            product: prod[0],
             docTitle: 'Admin Shop',
             path: '/admin/products'
         });
 
+    }).catch(err => {
+        console.log(err);
     });
-
 }
 
 exports.getAllProducts = (req, res, next) => {
-    Product.fetchAll(products => {
+    Product.fetchAll().then(([products, sysData]) => {
         //console.log(products);
 
         res.render('shop/product-list', {
@@ -90,19 +93,22 @@ exports.getAllProducts = (req, res, next) => {
             docTitle: 'Shop',
             path: '/products'
         });
+    }).catch(err => {
+        console.log(err);
     });
-
 }
 
 exports.deleteProduct = (req, res, next) => {
-
-    Product.delete(req.params.id);
-
-    res.status(204).redirect('/admin/products/');
+    Product.delete(req.params.id).then(result => {
+        console.log(result[0]);
+        res.status(204).redirect('/admin/products');
+    }).catch(err => {
+        console.log(err);
+    });
 }
 
 exports.getAdminProducts = (req, res, next) => {
-    Product.fetchAll(products => {
+    Product.fetchAll().then(([products, sysData])  => {
         //console.log(products);
 
         res.render('admin/all-products', {
@@ -110,6 +116,8 @@ exports.getAdminProducts = (req, res, next) => {
             docTitle: 'Admin Shop',
             path: '/admin/products'
         });
+    }).catch(err => {
+        console.log(err);
     });
 
 }

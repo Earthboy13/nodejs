@@ -4,7 +4,8 @@ const express = require('express'),
       adminRoutes = require('./routes/admin'), 
       shopRoutes = require('./routes/shop'),
       errorControl = require('./controllers/errors'),
-      rootDir = require('./util/path');
+      rootDir = require('./util/path'),
+      db = require('./util/database');
 
 
 const app = express();
