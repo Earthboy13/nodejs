@@ -3,7 +3,7 @@ const express = require('express'),
 
 const router = express.Router();
     
-router.delete('/admin/del-product/:id', prodControl.deleteProduct);
+router.delete('/del-product/:id', prodControl.deleteProduct);
 router.get('/add-product', prodControl.getAddProduct);
 
 router.post('/add-product', prodControl.postAddProduct);

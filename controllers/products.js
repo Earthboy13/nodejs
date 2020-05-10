@@ -52,47 +52,31 @@ exports.postEditProduct = (req, res, next) => {
 }
 
 exports.getProduct = (req, res, next) => {
-    Product.fetchAll(products => {
+
+    Product.findById(req.params.id, prod => {
         //console.log(req.params.id);
-        let found = false;
-        products.forEach(prod => {
-            console.log(prod);
-            if (prod.id == req.params.id) {
-                //console.log('found' + prod);
-                found = true;
-                res.render('shop/product-detail', {
-                    product: prod,
-                    docTitle: 'Shop',
-                    path: '/products'
-                });
-            }
+        console.log(prod);
+        res.render('shop/product-detail', {
+            product: prod,
+            docTitle: 'Shop',
+            path: '/products'
         });
-        if (!found) {
-            next();
-        }
+
     });
 
 }
 
 exports.getAdminProduct = (req, res, next) => {
-    Product.fetchAll(products => {
+    Product.findById(req.params.id, prod => {
         //console.log(req.params.id);
-        let found = false;
-        products.forEach(prod => {
-            console.log(prod);
-            if (prod.id == req.params.id) {
-                //console.log('found' + prod);
-                found = true;
-                res.render('admin/product-detail', {
-                    product: prod,
-                    docTitle: 'Admin Shop',
-                    path: '/admin/products'
-                });
-            }
+        console.log(prod);
+
+        res.render('admin/product-detail', {
+            product: prod,
+            docTitle: 'Admin Shop',
+            path: '/admin/products'
         });
-        if (!found) {
-            next();
-        }
+
     });
 
 }
