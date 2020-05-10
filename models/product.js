@@ -78,6 +78,22 @@ module.exports = class Product {
         });
     }
 
+    static delete(id) {
+        getProductsFromFile(products => {
+            let p = [];
+            products.forEach(prod => {
+                //console.log(prod);
+                if (prod.id != id) {
+                    p.push(prod);
+                }
+            });
+            fs.writeFile(productFilePath, JSON.stringify(p), (err) => {
+                console.log("write" + err);
+            }
+            );
+        });
+    }
+
     static fetchAll(cb) {
         getProductsFromFile(cb);
     }

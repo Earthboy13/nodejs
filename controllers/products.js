@@ -41,13 +41,14 @@ exports.getEditProduct = (req, res, next) => {
 }
 
 exports.postEditProduct = (req, res, next) => {
+
     Product.edit(req.body.title,
         req.body.imgUrl,
-        req.body.price,
         req.body.description,
+        req.body.price,
         req.params.id);
 
-    res.status(201).redirect('admin/products/' + req.params.id);
+    res.status(202).redirect('/admin/products/' + req.params.id);
 }
 
 exports.getProduct = (req, res, next) => {
@@ -57,7 +58,7 @@ exports.getProduct = (req, res, next) => {
         products.forEach(prod => {
             console.log(prod);
             if (prod.id == req.params.id) {
-                console.log('found' + prod);
+                //console.log('found' + prod);
                 found = true;
                 res.render('shop/product-detail', {
                     product: prod,
@@ -73,6 +74,28 @@ exports.getProduct = (req, res, next) => {
 
 }
 
+exports.getAdminProduct = (req, res, next) => {
+    Product.fetchAll(products => {
+        //console.log(req.params.id);
+        let found = false;
+        products.forEach(prod => {
+            console.log(prod);
+            if (prod.id == req.params.id) {
+                //console.log('found' + prod);
+                found = true;
+                res.render('admin/product-detail', {
+                    product: prod,
+                    docTitle: 'Admin Shop',
+                    path: '/admin/products'
+                });
+            }
+        });
+        if (!found) {
+            next();
+        }
+    });
+
+}
 
 exports.getAllProducts = (req, res, next) => {
     Product.fetchAll(products => {
@@ -87,14 +110,21 @@ exports.getAllProducts = (req, res, next) => {
 
 }
 
+exports.deleteProduct = (req, res, next) => {
+
+    Product.delete(req.params.id);
+
+    res.status(204).redirect('/admin/products/');
+}
+
 exports.getAdminProducts = (req, res, next) => {
     Product.fetchAll(products => {
         //console.log(products);
 
         res.render('admin/all-products', {
             prods: products,
-            docTitle: 'Shop',
-            path: '/products'
+            docTitle: 'Admin Shop',
+            path: '/admin/products'
         });
     });
 
