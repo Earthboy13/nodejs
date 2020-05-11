@@ -1,11 +1,10 @@
 const express = require('express'),
-      prodControl = require('../controllers/products'),
-      shopControl = require('../controllers/shop');
+      shopControl = require('../controllers/main');
 
 const router = express.Router();
 
-router.get('/products', prodControl.getAllProducts);
-router.get('/products/:id', prodControl.getProduct);
+router.get('/products', shopControl.getAllProducts);
+router.get('/products/detail', shopControl.getProduct);
 router.get('/cart', shopControl.getCart);
 router.get('/cart/checkout', shopControl.getCheckout);
 router.get('/', shopControl.getHome);

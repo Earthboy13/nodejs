@@ -18,8 +18,12 @@
                     <p class="product__description"><%= product.description %></p>
                 </div>
                 <div class="card__actions">
-                    <a href="/admin/edit-product/<%= product.id %>"><button class="btn">Edit</button></a>
-                    <form class="product-form" action="/admin/del-product/<%= product.id %>" method="POST">
+                    <form class="product-form" action="/admin/edit-product" method="GET">
+                        <input type="hidden" value="<%= product.id %>" name="id">
+                        <button type=submit class="btn">Edit</button>
+                    </form>
+                    <form class="product-form" action="/admin/del-product" method="POST">
+                        <input type="hidden" value="<%= product.id %>" name="id">
                         <button type=submit class="btn">Delete</button>
                     </form>
                 </div>

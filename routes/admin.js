@@ -3,15 +3,16 @@ const express = require('express'),
 
 const router = express.Router();
     
-router.post('/del-product/:id', prodControl.deleteProduct);
+router.post('/del-product', prodControl.deleteProduct);
 router.get('/add-product', prodControl.getAddProduct);
 
 router.post('/add-product', prodControl.postAddProduct);
 
 router.get('/products', prodControl.getAdminProducts);
-router.get('/products/:id', prodControl.getAdminProduct);
-router.get('/edit-product/:id', prodControl.getEditProduct);
-router.post('/edit-product/:id', prodControl.postEditProduct);
+router.get('/products/detail', prodControl.getAdminProduct);
+
+router.post('/edit-product', prodControl.postEditProduct);
+router.get('/edit-product', prodControl.getEditProduct);
 
 
 exports.routes = router;

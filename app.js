@@ -5,6 +5,7 @@ const express = require('express'),
       shopRoutes = require('./routes/shop'),
       errorControl = require('./controllers/errors'),
       rootDir = require('./util/path'),
+      Sequelize = require('sequelize'),
       db = require('./util/database');
 
 
@@ -20,4 +21,11 @@ app.use(shopRoutes.routes);
 
 app.use(errorControl.notFound);
 
-app.listen(8080);
+db.sync().then(result =>{
+    //console.log(result);
+    app.listen(8080);
+    }).catch(err =>{
+    console.log(err);
+    });
+
+
