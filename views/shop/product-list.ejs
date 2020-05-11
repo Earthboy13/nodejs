@@ -24,7 +24,10 @@
                                 <input type="hidden" value="<%= product.id %>" name="id">
                                 <button type=submit class="btn">Detail</button>
                             </form>
-                            <button class="btn">Add to Cart</button>
+                            <form class="product-form" action="/cart" method="POST">
+                                <input type="hidden" value="<%= product.id %>" name="id">
+                                <button type=submit class="btn">Add to Cart</button>
+                            </form>
                         </div>
                     </article>
                 <% } %>

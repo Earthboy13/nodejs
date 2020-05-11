@@ -5,8 +5,11 @@ const express = require('express'),
       shopRoutes = require('./routes/shop'),
       errorControl = require('./controllers/errors'),
       rootDir = require('./util/path'),
-      Sequelize = require('sequelize'),
-      db = require('./util/database');
+      db = require('./util/database'),
+      Product = require('./models/product'),
+      User = require('./models/user'),
+      Cart = require('./models/cart'),
+      CartItem = require('./models/cart-item');
 
 
 const app = express();
@@ -16,16 +19,54 @@ app.set('views', 'views');
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(rootDir, 'public')));
+
+app.use((req, res, next) =>{
+    User.findByPk(1)
+        .then(user => { 
+            req.user =  user; 
+            //console.log(req.user);
+            next();})
+        .catch(err => console.log(err));
+});
+
 app.use("/admin", adminRoutes.routes);
 app.use(shopRoutes.routes);
 
 app.use(errorControl.notFound);
 
-db.sync().then(result =>{
-    //console.log(result);
-    app.listen(8080);
-    }).catch(err =>{
-    console.log(err);
-    });
+Product.belongsTo(User, { constranits: true, onDelete: 'CASCADE' });
+User.hasMany(Product);
+User.hasOne(Cart);
+Cart.belongsTo(User);
+Cart.belongsToMany(Product, { through: CartItem });
+Product.belongsToMany(Cart, { through: CartItem });
+let u;
+db
+.sync()
+//.sync({ force: true })
+.then(() =>{
+        return User.findByPk(1);
+        }).then( user =>{ 
+            //console.log(result);
+            if (!user)
+                return User.create({
+                    username: 'user',
+                    first_name: 'Max',
+                    last_name: 'teach',
+                    email: 'fake@email.com',
+                    dob: '1982-12-01'
+                });
+            return Promise.resolve(user);      
+        }).then(user =>{
+            u = user;
+            return user.getCart()
+        }).then(cart => {
+            //console.log(cart);
+            if (cart === null)
+                return u.createCart().then(() => app.listen(8080)).catch(err => {console.log(err);});
+            app.listen(8080);
+        }).catch(err =>{
+            console.log(err);
+        });
 
 

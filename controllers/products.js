@@ -1,16 +1,44 @@
 const Product = require('../models/product');
-const Task = require('../models/task');
+
 
 exports.deleteProduct = (req, res, next) => {
-    Task.destroyById(Product, req, res, '/admin/products');
+    req.user.destroyProduct({ where: { id: req.body.id } }).then(result => {
+        console.log(result);
+        res.status(204).redirect('/admin/products');
+    }).catch(err => {
+        console.log(err);
+    });
 }
 
 exports.postAddProduct = (req, res, next) => {
-    Task.add(Product, req, res, '/admin/products');
+    const param = {
+        title: req.body.title,
+        imgUrl: req.body.imgUrl,
+        description: req.body.description,
+        price: req.body.price
+    };
+    req.user.createProduct(param).then(result => {
+        console.log(result);
+        res.status(201).redirect('/admin/products');
+    }).catch(err => {
+        console.log(err);
+    });
 }
 
 exports.postEditProduct = (req, res, next) => {
-    Task.updateById(Product, req, res, '/admin/products');
+    const param = {
+        title: req.body.title,
+        imgUrl: req.body.imgUrl,
+        description: req.body.description,
+        price: req.body.price
+    };
+    req.user.updateProduct(param, { where: { id: req.body.id } })
+        .then(result => {
+            console.log(result);
+            res.status(202).redirect('/admin/products');
+        }).catch(err => {
+            console.log(err);
+        });
 }
 
 exports.getAddProduct = (req, res, next) => {
@@ -22,15 +50,47 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.getEditProduct = (req, res, next) => {
     const path = '', docTitle = 'Edit Product', script = 'admin/edit-product';
-    Task.getById(Product, script, docTitle, path, req, res);
+    req.user.getProducts({ where: { id: req.query.id } }).then(prod => {
+        //console.log(req.body.id);
+        //console.log(req.query.id);
+        //console.log(prod);
+        res.render(script, {
+            product: prod,
+            docTitle: docTitle,
+            path: path
+        });
+    }).catch(err => {
+        console.log(err);
+    });
 }
 
 exports.getAdminProduct = (req, res, next) => {
     const path = '/admin/products', docTitle = 'Admin Shop', script = 'admin/product-detail';
-    Task.getById(Product, script, docTitle, path, req, res);
+    req.user.getProducts({ where: { id: req.query.id } }).then(prod => {
+        //console.log(req.body.id);
+        //console.log(req.query.id);
+        //console.log(prod);
+        res.render(script, {
+            product: prod[0],
+            docTitle: docTitle,
+            path: path
+        });
+    }).catch(err => {
+        console.log(err);
+    });
 }
 
 exports.getAdminProducts = (req, res, next) => {
     const path = '/admin/products', docTitle = 'Admin Shop', script = 'admin/all-products';
-    Task.getAll(Product, script, docTitle, path, res);
+    req.user.getProducts().then(products => {
+        //console.log('find all');  
+        // console.log(products);
+        res.render(script, {
+            prods: products,
+            docTitle: docTitle,
+            path: path
+        });
+    }).catch(err => {
+        console.log(err);
+    });
 }

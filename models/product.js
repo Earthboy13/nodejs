@@ -10,19 +10,22 @@ const Product = db.define('product',
         primaryKey: true
     },
     title: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(32),
         allowNull: false
     },
     price: {
         type: Sequelize.DOUBLE,
-        allowNull: false
+        allowNull: false,
+        min: 0,
+        isNumeric: true
     },
     imgUrl:{
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        isUrl: true
     },
     description:{
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: false
     }
 }
