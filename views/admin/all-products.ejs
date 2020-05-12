@@ -21,15 +21,15 @@
                 </div>
                 <div class="card__actions">
                     <form class="product-form" action="/admin/products/detail" method="GET">
-                        <input type="hidden" value="<%= product.id %>" name="id">
+                        <input type="hidden" value="<%= product._id %>" name="id">
                         <button type=submit class="btn">Detail</button>
                     </form>
                     <form class="product-form" action="/admin/edit-product" method="GET">
-                        <input type="hidden" value="<%= product.id %>" name="id">
+                        <input type="hidden" value="<%= product._id %>" name="id">
                         <button type=submit class="btn">Edit</button>
                     </form>
                     <form class="product-form" action="/admin/del-product" method="POST">
-                        <input type="hidden" value="<%= product.id %>" name="id">
+                        <input type="hidden" value="<%= product._id %>" name="id">
                         <button type=submit class="btn">Delete</button>
                     </form>
                 </div>
