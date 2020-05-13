@@ -2,16 +2,16 @@
 //const db = require('../util/database');
 const getDb = require('../util/database').getDb;
 const mongoDb = require('mongodb');
+
 module.exports = class Product {
 
-
-
-    constructor(param) {
+    constructor(param, userId) {
         this.title = param.title;
         this.imgUrl = param.imgUrl;
         this.description = param.description;
         this.price = param.price;
         this._id = param.id ? mongoDb.ObjectId(param.id) : undefined;
+        this.userId = userId;
     }
 
     save() {  

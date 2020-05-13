@@ -5,11 +5,12 @@ const express = require('express'),
       shopRoutes = require('./routes/shop'),
       errorControl = require('./controllers/errors'),
       rootDir = require('./util/path'),
-      MongoConnect = require('./util/database').client;
+      MongoConnect = require('./util/database').client,
       //Product = require('./models/product'),
-     // User = require('./models/user'),
+      User = require('./models/user')
      // Cart = require('./models/cart'),
-     // CartItem = require('./models/cart-item');
+     // CartItem = require('./models/cart-item')
+     ;
 
 
 const app = express();
@@ -19,15 +20,14 @@ app.set('views', 'views');
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(rootDir, 'public')));
-
+//
 app.use((req, res, next) =>{
-  /*  User.findByPk(1)
+    User.findById('5eba2f6dbd21ea8c300ef7a7')
         .then(user => { 
             req.user =  user; 
             //console.log(req.user);
             next();})
-        .catch(err => console.log(err));*/
-        next();
+        .catch(err => console.log(err));
 });
 
 app.use("/admin", adminRoutes.routes);
