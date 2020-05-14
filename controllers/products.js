@@ -53,13 +53,16 @@ exports.postEditProduct = (req, res, next) => {
 }
 
 exports.getAddProduct = (req, res, next) => {
+    const isLoggedIn = req.get('Cookie').split(';')[1].split('=')[1] === 'true';
     res.render('admin/add-product', {
         docTitle: 'Add Product',
+        isLoggedIn: isLoggedIn,
         path: '/admin/add-product'
     });
 }
 
 exports.getEditProduct = (req, res, next) => {
+    const isLoggedIn = req.get('Cookie').split(';')[1].split('=')[1] === 'true';
     const path = '', docTitle = 'Edit Product', script = 'admin/edit-product';
     //req.user.getProducts({ where: { id: req.query.id } })
     Product.findById(req.query.id)
@@ -69,6 +72,7 @@ exports.getEditProduct = (req, res, next) => {
         console.log(prod);
         res.render(script, {
             product: prod,
+            isLoggedIn: isLoggedIn,
             docTitle: docTitle,
             path: path
         });
@@ -78,6 +82,7 @@ exports.getEditProduct = (req, res, next) => {
 }
 
 exports.getAdminProduct = (req, res, next) => {
+    const isLoggedIn = req.get('Cookie').split(';')[1].split('=')[1] === 'true';
     const path = '/admin/products', docTitle = 'Admin Shop', script = 'admin/product-detail';
     //req.user.getProducts({ where: { id: req.query.id } })
     Product.findById(req.query.id).then(prod => {
@@ -86,6 +91,7 @@ exports.getAdminProduct = (req, res, next) => {
         //console.log(prod);
         res.render(script, {
             product: prod,
+            isLoggedIn: isLoggedIn,
             docTitle: docTitle,
             path: path
         });
@@ -95,6 +101,7 @@ exports.getAdminProduct = (req, res, next) => {
 }
 
 exports.getAdminProducts = (req, res, next) => {
+    const isLoggedIn = req.get('Cookie').split(';')[1].split('=')[1] === 'true';
     const path = '/admin/products', docTitle = 'Admin Shop', script = 'admin/all-products';
     //req.user.getProducts()
     Product.find().then(products => {
@@ -102,6 +109,7 @@ exports.getAdminProducts = (req, res, next) => {
         //console.log(products);
         res.render(script, {
             prods: products,
+            isLoggedIn: isLoggedIn,
             docTitle: docTitle,
             path: path
         });

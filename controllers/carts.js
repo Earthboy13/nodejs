@@ -3,7 +3,7 @@ const Product = require('../models/product');
 const User = require('../models/user');
 
 exports.getCart = (req, res, next) => {
-    
+    const isLoggedIn = req.get('Cookie').split(';')[1].split('=')[1] === 'true';
     const path = '/cart', docTitle = 'Cart', script = 'shop/cart';
     req.user
     .populate('cart.items.productId')
@@ -17,6 +17,7 @@ exports.getCart = (req, res, next) => {
         const products = user.cart.items;
         res.render(script, {
             total: user.cart.totalPrice,
+            isLoggedIn: isLoggedIn,
             products: products,
             docTitle: docTitle,
             path: path
@@ -77,6 +78,7 @@ exports.deleteFromCart = (req, res, next) => {
 exports.getCheckout = (req, res, next) => {
     res.render('shop/cart', {
         docTitle: 'Checkout',
+        isLoggedIn: req.isLoggedIn,
         path: '/cart',
     });
 }

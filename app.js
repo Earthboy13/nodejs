@@ -2,7 +2,8 @@ const uri = 'mongodb+srv://Earthboy13:0E23C784@nodejs-db-orfyf.gcp.mongodb.net/n
       express = require('express'), 
       path = require('path'), 
       bodyParser = require('body-parser'), 
-      adminRoutes = require('./routes/admin'), 
+      adminRoutes = require('./routes/admin'),
+      authRoutes = require('./routes/auth'), 
       shopRoutes = require('./routes/shop'),
       errorControl = require('./controllers/errors'),
       rootDir = require('./util/path'),
@@ -31,6 +32,7 @@ app.use(express.static(path.join(rootDir, 'public')));
         .catch(err => console.log(err));
 }); 
 
+app.use(authRoutes.routes);
 app.use("/admin", adminRoutes.routes);
 app.use(shopRoutes.routes);
 
@@ -61,7 +63,7 @@ mongoose
     }
     else
         console.log('User found');
-        
+
     return Promise.resolve(users[0]);
 })/*
 .then(user => {

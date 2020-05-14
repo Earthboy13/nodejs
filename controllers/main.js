@@ -3,17 +3,21 @@ const Product = require('../models/product');
 const Order = require('../models/order');
 
 exports.getHome = (req, res, next) => {
+    const isLoggedIn = req.get('Cookie').split(';')[1].split('=')[1] === 'true';
     res.render('shop/index', {
         docTitle: 'Home',
+        isLoggedIn: isLoggedIn,
         path: '/',
     });
 }
 
 exports.getOrders = (req, res, next) => {
+    const isLoggedIn = req.get('Cookie').split(';')[1].split('=')[1] === 'true';
     const path = '/orders', docTitle = 'Orders', script = 'shop/order';
     Order.find({ 'user.userId': req.user._id}).then( orders => {
         res.render(script, {
             docTitle: docTitle,
+            isLoggedIn: isLoggedIn,
             orders: orders.reverse(),
             path: path,
         });
@@ -54,6 +58,7 @@ exports.postOrders = (req, res, next) => {
 }
 
 exports.getAllProducts = (req, res, next) => {
+    const isLoggedIn = req.get('Cookie').split(';')[1].split('=')[1] === 'true';
     const path = '/products', docTitle = 'Shop', script = 'shop/product-list';
     //Task.getAll(Product, script, docTitle, path, res);
     Product.find().then(products => {
@@ -61,6 +66,7 @@ exports.getAllProducts = (req, res, next) => {
         //console.log(products);
         res.render(script, {
             prods: products,
+            isLoggedIn: isLoggedIn,
             docTitle: docTitle,
             path: path
         });
@@ -70,6 +76,7 @@ exports.getAllProducts = (req, res, next) => {
 }
 
 exports.getProduct = (req, res, next) => {
+    const isLoggedIn = req.get('Cookie').split(';')[1].split('=')[1] === 'true';
     const path = '/products', docTitle = 'Shop', script = 'shop/product-detail';
     //Task.getById(Product, script, docTitle, path, req, res);
     Product.findById(req.query.id).then(prod => {
@@ -78,6 +85,7 @@ exports.getProduct = (req, res, next) => {
         //console.log(prod);
         res.render(script, {
             product: prod,
+            isLoggedIn: isLoggedIn,
             docTitle: docTitle,
             path: path
         });
