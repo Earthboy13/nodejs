@@ -2,7 +2,7 @@ const Product = require('../models/product');
 
 
 exports.deleteProduct = (req, res, next) => {
-    //req.user.destroyProduct({ where: { id: req.body.id } })
+    //req.session.user.destroyProduct({ where: { id: req.body.id } })
     Product.findOneAndDelete(req.body.id)
     .then(result => {
         //console.log(result);
@@ -18,9 +18,9 @@ exports.postAddProduct = (req, res, next) => {
         imgUrl: req.body.imgUrl,
         description: req.body.description,
         price: req.body.price,
-        userId: req.user._id
+        userId: req.session.user._id
     };
-    //req.user.createProduct(param)
+    //req.session.user.createProduct(param)
     const product = new Product(param);
     product.save().then(result => {
         //console.log(result);
@@ -39,7 +39,7 @@ exports.postEditProduct = (req, res, next) => {
         price: req.body.price,
         id: req.body.id
     };
-    //req.user.updateProduct(param, { where: { id: req.body.id } })
+    //req.session.user.updateProduct(param, { where: { id: req.body.id } })
     //const product = new Product(param);
     //product.edit()
     Product.findOneAndUpdate(req.body.id, param, { new: true})
@@ -53,7 +53,7 @@ exports.postEditProduct = (req, res, next) => {
 }
 
 exports.getAddProduct = (req, res, next) => {
-    const isLoggedIn = req.get('Cookie').split(';')[1].split('=')[1] === 'true';
+    const isLoggedIn = req.session.isLoggedIn;
     res.render('admin/add-product', {
         docTitle: 'Add Product',
         isLoggedIn: isLoggedIn,
@@ -62,9 +62,9 @@ exports.getAddProduct = (req, res, next) => {
 }
 
 exports.getEditProduct = (req, res, next) => {
-    const isLoggedIn = req.get('Cookie').split(';')[1].split('=')[1] === 'true';
+    const isLoggedIn = req.session.isLoggedIn;
     const path = '', docTitle = 'Edit Product', script = 'admin/edit-product';
-    //req.user.getProducts({ where: { id: req.query.id } })
+    //req.session.user.getProducts({ where: { id: req.query.id } })
     Product.findById(req.query.id)
     .then(prod => {
         //console.log(req.body.id);
@@ -82,9 +82,9 @@ exports.getEditProduct = (req, res, next) => {
 }
 
 exports.getAdminProduct = (req, res, next) => {
-    const isLoggedIn = req.get('Cookie').split(';')[1].split('=')[1] === 'true';
+    const isLoggedIn = req.session.isLoggedIn;
     const path = '/admin/products', docTitle = 'Admin Shop', script = 'admin/product-detail';
-    //req.user.getProducts({ where: { id: req.query.id } })
+    //req.session.user.getProducts({ where: { id: req.query.id } })
     Product.findById(req.query.id).then(prod => {
         //console.log(req.body.id);
         //console.log(req.query.id);
@@ -101,9 +101,9 @@ exports.getAdminProduct = (req, res, next) => {
 }
 
 exports.getAdminProducts = (req, res, next) => {
-    const isLoggedIn = req.get('Cookie').split(';')[1].split('=')[1] === 'true';
+    const isLoggedIn = req.session.isLoggedIn;
     const path = '/admin/products', docTitle = 'Admin Shop', script = 'admin/all-products';
-    //req.user.getProducts()
+    //req.session.user.getProducts()
     Product.find().then(products => {
         //console.log('find all');  
         //console.log(products);

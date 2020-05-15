@@ -3,7 +3,7 @@ const Product = require('../models/product');
 const Order = require('../models/order');
 
 exports.getHome = (req, res, next) => {
-    const isLoggedIn = req.get('Cookie').split(';')[1].split('=')[1] === 'true';
+    const isLoggedIn = req.session.isLoggedIn;
     res.render('shop/index', {
         docTitle: 'Home',
         isLoggedIn: isLoggedIn,
@@ -12,9 +12,9 @@ exports.getHome = (req, res, next) => {
 }
 
 exports.getOrders = (req, res, next) => {
-    const isLoggedIn = req.get('Cookie').split(';')[1].split('=')[1] === 'true';
+    const isLoggedIn = req.session.isLoggedIn;
     const path = '/orders', docTitle = 'Orders', script = 'shop/order';
-    Order.find({ 'user.userId': req.user._id}).then( orders => {
+    Order.find({ 'user.userId': req.session.user._id}).then( orders => {
         res.render(script, {
             docTitle: docTitle,
             isLoggedIn: isLoggedIn,
@@ -27,7 +27,7 @@ exports.getOrders = (req, res, next) => {
 }
 
 exports.postOrders = (req, res, next) => {
-    req.user
+    User.findById(req.session.user._id)
         .populate('cart.items.productId')
         .execPopulate()
         .then(user => {
@@ -36,9 +36,9 @@ exports.postOrders = (req, res, next) => {
             }); 
             const order = new Order({
                 user:{
-                    email: req.user.email,
-                    username: req.user.username,
-                    userId: req.user._id,
+                    email: req.session.user.email,
+                    username: req.session.user.username,
+                    userId: req.session.user._id,
                 },
                 totalPrice: user.cart.totalPrice,
                 items: items
@@ -47,7 +47,7 @@ exports.postOrders = (req, res, next) => {
             return order.save();
         })
         .then(() =>{
-            return req.user.emptyCart();
+            return req.session.user.emptyCart();
         })
         .then(() => {
             res.status(201).redirect('/orders');
@@ -58,7 +58,7 @@ exports.postOrders = (req, res, next) => {
 }
 
 exports.getAllProducts = (req, res, next) => {
-    const isLoggedIn = req.get('Cookie').split(';')[1].split('=')[1] === 'true';
+    const isLoggedIn = req.session.isLoggedIn;
     const path = '/products', docTitle = 'Shop', script = 'shop/product-list';
     //Task.getAll(Product, script, docTitle, path, res);
     Product.find().then(products => {
@@ -76,7 +76,7 @@ exports.getAllProducts = (req, res, next) => {
 }
 
 exports.getProduct = (req, res, next) => {
-    const isLoggedIn = req.get('Cookie').split(';')[1].split('=')[1] === 'true';
+    const isLoggedIn = req.session.isLoggedIn;
     const path = '/products', docTitle = 'Shop', script = 'shop/product-detail';
     //Task.getById(Product, script, docTitle, path, req, res);
     Product.findById(req.query.id).then(prod => {

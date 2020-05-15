@@ -3,17 +3,15 @@ const Product = require('../models/product');
 const User = require('../models/user');
 
 exports.getCart = (req, res, next) => {
-    const isLoggedIn = req.get('Cookie').split(';')[1].split('=')[1] === 'true';
+    const isLoggedIn = req.session.isLoggedIn;
     const path = '/cart', docTitle = 'Cart', script = 'shop/cart';
-    req.user
-    .populate('cart.items.productId')
-    .execPopulate()
+    User.findById(req.session.user._id).then(user => {
+        console.log(req.session.user);
+        
+        return user.populate('cart.items.productId').execPopulate();
+    })
     .then(user =>{
-        //return cart.getProducts();
-   // }).then(products => {
-        //console.log('find all');  
-        // console.log(products);
-        user.updateTotal();
+                user.updateTotal();
         const products = user.cart.items;
         res.render(script, {
             total: user.cart.totalPrice,
@@ -37,9 +35,16 @@ exports.getCart = (req, res, next) => {
 exports.postCart = (req, res, next) => {
    
     Product.findById(req.body.id).then(product => {
-        return req.user.addToCart(product);
+        
+    User.findById(req.session.user._id)
+        .then(user => {
+            return user.addToCart(product);
+        })
+    
     })
+    
     .then(() => {
+        
         res.status(201).redirect('/cart');
     })
     .catch(err => {
@@ -50,7 +55,11 @@ exports.postCart = (req, res, next) => {
 exports.postReduceFromCart = (req, res, next) => {
 
     Product.findById(req.body.id).then(product => {
-        return req.user.reduceFromCart(product);
+        User.findById(req.session.user._id)
+            .then(user => {
+                return user.reduceFromCart(product);
+            })
+        
     })
         .then(() => {
             res.status(201).redirect('/cart');
@@ -64,7 +73,10 @@ exports.postReduceFromCart = (req, res, next) => {
 exports.deleteFromCart = (req, res, next) => {
 
     Product.findById(req.body.id).then(product => {
-        return req.user.removeFromCart(product);
+        User.findById(req.session.user._id)
+            .then(user => {
+                return user.removeFromCart(product);
+            })
     })
         .then(() => {
             res.status(201).redirect('/cart');

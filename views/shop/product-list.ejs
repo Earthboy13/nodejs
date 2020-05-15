@@ -24,10 +24,12 @@
                                 <input type="hidden" value="<%= product._id %>" name="id">
                                 <button type=submit class="btn">Detail</button>
                             </form>
+                            <% if (isLoggedIn) { %>
                             <form class="product-form" action="/cart" method="POST">
                                 <input type="hidden" value="<%= product._id %>" name="id">
                                 <button type=submit class="btn">Add to Cart</button>
                             </form>
+                            <% } %>
                         </div>
                     </article>
                 <% } %>

@@ -1,21 +1,19 @@
 const express = require('express'),
       shopControl = require('../controllers/main'),
+      authMiddleWare = require('../middleware/is-auth'),
       cartControl = require('../controllers/carts');
 
 const router = express.Router();
-// /cart-reduce-item
-router.get('/products/detail', shopControl.getProduct);
-router.get('/products', shopControl.getAllProducts);
 
-router.get('/cart/checkout', cartControl.getCheckout);
-router.get('/cart', cartControl.getCart);
-router.post('/cart', cartControl.postCart);
-router.post('/cart-delete-item', cartControl.deleteFromCart);
-router.post('/cart-reduce-item', cartControl.postReduceFromCart);
+router.get('/cart/checkout', authMiddleWare, cartControl.getCheckout);
 
-router.get('/orders', shopControl.getOrders);
-router.post('/create-order', shopControl.postOrders);
+router.post('/cart-delete-item', authMiddleWare, cartControl.deleteFromCart);
+router.post('/cart-reduce-item', authMiddleWare, cartControl.postReduceFromCart);
+router.get('/cart', authMiddleWare, cartControl.getCart);
+router.post('/cart', authMiddleWare, cartControl.postCart);
 
-router.get('/', shopControl.getHome);
+router.get('/orders', authMiddleWare, shopControl.getOrders);
+router.post('/create-order', authMiddleWare, shopControl.postOrders);
+
 
 exports.routes = router
