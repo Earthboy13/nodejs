@@ -17,6 +17,7 @@ module.exports.postLogin = (req, res, next) => {
             //console.log(user.password);
             
             if (user === null) {
+                req.flash('error','Invalid username or password');
                 return res.redirect('/login');
             }
             bcrypt.compare(req.body.password,user.password)
@@ -32,6 +33,7 @@ module.exports.postLogin = (req, res, next) => {
                     });
                 }else
                 {
+                    req.flash('error', 'Invalid username or password');
                     res.redirect('/login');
                 }
             }).catch(err => {
@@ -55,6 +57,7 @@ module.exports.postSignUp = (req, res, next) => {
     User.findOne().or({ email: req.body.email }, { username: req.body.username })
         .then(user => {
             if (user !== null) {
+                req.flash('error', 'Username or E-mail already in use.');
                 return res.redirect('/sign-up');
             }
             console.log('over there');
@@ -108,28 +111,27 @@ module.exports.postSignUp = (req, res, next) => {
 module.exports.postLogout = (req, res, next) => {
     req.session.destroy((err) => {
         console.log(err);
-
         res.redirect('/');
     });
 
 }
 
 module.exports.getLogin = (req, res, next) => {
-    const isLoggedIn = req.session.isLoggedIn;
+    
     //console.log(req.session.isLoggedIn);
     res.render('auth/login', {
-        docTitle: 'Login',
-        isLoggedIn: isLoggedIn,
+        docTitle: 'Login',      
         path: '/login',
+        errorMessage: req.flash('error')
     });
 }
 
 module.exports.getSignUp = (req, res, next) => {
-    const isLoggedIn = req.session.isLoggedIn;
+    
     //console.log(req.session.isLoggedIn);
     res.render('auth/login', {
-        docTitle: 'Sign Up',
-        isLoggedIn: isLoggedIn,
+        docTitle: 'Sign Up', 
         path: '/sign-up',
+        errorMessage: req.flash('error')   
     });
 }

@@ -3,10 +3,10 @@ const Product = require('../models/product');
 const User = require('../models/user');
 
 exports.getCart = (req, res, next) => {
-    const isLoggedIn = req.session.isLoggedIn;
+    
     const path = '/cart', docTitle = 'Cart', script = 'shop/cart';
-    User.findById(req.session.user._id).then(user => {
-        console.log(req.session.user);
+    User.findById(req.user._id).then(user => {
+        console.log(req.user);
         
         return user.populate('cart.items.productId').execPopulate();
     })
@@ -15,7 +15,6 @@ exports.getCart = (req, res, next) => {
         const products = user.cart.items;
         res.render(script, {
             total: user.cart.totalPrice,
-            isLoggedIn: isLoggedIn,
             products: products,
             docTitle: docTitle,
             path: path
@@ -36,7 +35,7 @@ exports.postCart = (req, res, next) => {
    
     Product.findById(req.body.id).then(product => {
         
-    User.findById(req.session.user._id)
+    User.findById(req.user._id)
         .then(user => {
             return user.addToCart(product);
         })
@@ -55,7 +54,7 @@ exports.postCart = (req, res, next) => {
 exports.postReduceFromCart = (req, res, next) => {
 
     Product.findById(req.body.id).then(product => {
-        User.findById(req.session.user._id)
+        User.findById(req.user._id)
             .then(user => {
                 return user.reduceFromCart(product);
             })
@@ -73,7 +72,7 @@ exports.postReduceFromCart = (req, res, next) => {
 exports.deleteFromCart = (req, res, next) => {
 
     Product.findById(req.body.id).then(product => {
-        User.findById(req.session.user._id)
+        User.findById(req.user._id)
             .then(user => {
                 return user.removeFromCart(product);
             })
@@ -91,7 +90,7 @@ exports.getCheckout = (req, res, next) => {
     res.render('shop/cart', {
         docTitle: 'Checkout',
         isLoggedIn: req.isLoggedIn,
-        path: '/cart',
+        path: '/cart'
     });
 }
 

@@ -7,7 +7,8 @@ const uri = 'mongodb+srv://Earthboy13:0E23C784@nodejs-db-orfyf.gcp.mongodb.net/n
       mainRoutes = require('./routes/main'),
       shopRoutes = require('./routes/shop'),
       errorControl = require('./controllers/errors'),
-      
+      csrf = require('csurf'),
+      flash = require('connect-flash'),
       rootDir = require('./util/path'),
       mongoose = require('mongoose'),
       session = require('express-session'),
@@ -23,7 +24,9 @@ const app = express(),
       store = new MongoDBStore({
         uri: uri,
         collection: 'sessions'
-      });
+      }),
+      csifProtection = csrf()
+      ;
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -37,6 +40,26 @@ app.use(session({
     store: store
 }));
 //
+app.use(csifProtection);
+app.use(flash());
+
+app.use((req, res, next) => {
+    if (!req.session.user) {
+        return next();
+    }
+    User.findById(req.session.user._id)
+        .then(user => {
+            req.user = user;
+            next();
+        })
+        .catch(err => console.log(err));
+});
+
+app.use((req, res, next) => {
+    res.locals.isLoggedIn = req.session.isLoggedIn;
+    res.locals.csrfToken = req.csrfToken();
+    next();
+});
 
 app.use(authRoutes.routes);
 

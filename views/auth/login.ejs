@@ -6,6 +6,9 @@
 <body>
     <%- include('../includes/nav.ejs') %>
     <main>
+        <% if (errorMessage.length > 0) { %>
+        <div class="user-message user-message--error"><%=errorMessage[0]%></div>
+        <% } %>
         <form class="login-form" action="<%= path === '/login' ? '/login' : '/sign-up'%>" method="POST">
             <% if (path === '/login') { %>
             <div class="form-control">
@@ -42,6 +45,7 @@
                 <input type="date" name="dob" id="dob">
             </div>
             <% } %>
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>">
             <button type=submit><% if (path === '/login') { %>Login<% } else { %>Sign-up<% } %></button>
         </form>
     </main>

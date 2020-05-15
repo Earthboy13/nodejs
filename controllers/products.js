@@ -18,7 +18,7 @@ exports.postAddProduct = (req, res, next) => {
         imgUrl: req.body.imgUrl,
         description: req.body.description,
         price: req.body.price,
-        userId: req.session.user._id
+        userId: req.user._id
     };
     //req.session.user.createProduct(param)
     const product = new Product(param);
@@ -53,16 +53,15 @@ exports.postEditProduct = (req, res, next) => {
 }
 
 exports.getAddProduct = (req, res, next) => {
-    const isLoggedIn = req.session.isLoggedIn;
+    
     res.render('admin/add-product', {
         docTitle: 'Add Product',
-        isLoggedIn: isLoggedIn,
         path: '/admin/add-product'
     });
 }
 
 exports.getEditProduct = (req, res, next) => {
-    const isLoggedIn = req.session.isLoggedIn;
+    
     const path = '', docTitle = 'Edit Product', script = 'admin/edit-product';
     //req.session.user.getProducts({ where: { id: req.query.id } })
     Product.findById(req.query.id)
@@ -72,7 +71,6 @@ exports.getEditProduct = (req, res, next) => {
         console.log(prod);
         res.render(script, {
             product: prod,
-            isLoggedIn: isLoggedIn,
             docTitle: docTitle,
             path: path
         });
@@ -82,7 +80,7 @@ exports.getEditProduct = (req, res, next) => {
 }
 
 exports.getAdminProduct = (req, res, next) => {
-    const isLoggedIn = req.session.isLoggedIn;
+    
     const path = '/admin/products', docTitle = 'Admin Shop', script = 'admin/product-detail';
     //req.session.user.getProducts({ where: { id: req.query.id } })
     Product.findById(req.query.id).then(prod => {
@@ -91,7 +89,6 @@ exports.getAdminProduct = (req, res, next) => {
         //console.log(prod);
         res.render(script, {
             product: prod,
-            isLoggedIn: isLoggedIn,
             docTitle: docTitle,
             path: path
         });
@@ -101,7 +98,7 @@ exports.getAdminProduct = (req, res, next) => {
 }
 
 exports.getAdminProducts = (req, res, next) => {
-    const isLoggedIn = req.session.isLoggedIn;
+    
     const path = '/admin/products', docTitle = 'Admin Shop', script = 'admin/all-products';
     //req.session.user.getProducts()
     Product.find().then(products => {
@@ -109,7 +106,6 @@ exports.getAdminProducts = (req, res, next) => {
         //console.log(products);
         res.render(script, {
             prods: products,
-            isLoggedIn: isLoggedIn,
             docTitle: docTitle,
             path: path
         });
