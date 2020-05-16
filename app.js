@@ -9,14 +9,12 @@ const uri = 'mongodb+srv://Earthboy13:0E23C784@nodejs-db-orfyf.gcp.mongodb.net/n
       errorControl = require('./controllers/errors'),
       csrf = require('csurf'),
       flash = require('connect-flash'),
+      
       rootDir = require('./util/path'),
       mongoose = require('mongoose'),
       session = require('express-session'),
-MongoDBStore = require('connect-mongodb-session')(session),
-      //Product = require('./models/product'),
+      MongoDBStore = require('connect-mongodb-session')(session),
       User = require('./models/user')
-     // Cart = require('./models/cart'),
-     // CartItem = require('./models/cart-item')
      ;
 
 
@@ -26,6 +24,7 @@ const app = express(),
         collection: 'sessions'
       }),
       csifProtection = csrf()
+      
       ;
 
 app.set('view engine', 'ejs');
@@ -77,7 +76,7 @@ mongoose
 .then(() => {
     console.log('Connected');
     console.log('Site up.');
-    app.listen(8080);
+    app.listen(80);
 })
 .catch(err => { console.log(err); });
 

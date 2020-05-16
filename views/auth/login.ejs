@@ -48,5 +48,12 @@
             <input type="hidden" name="_csrf" value="<%=csrfToken%>">
             <button type=submit><% if (path === '/login') { %>Login<% } else { %>Sign-up<% } %></button>
         </form>
+        <% if (path === '/login') { %>
+            <div class="centered" >
+                <a href="/reset" style="text-decoration: none;color: black;">
+                   Forgot password?
+                </a>
+            </div>
+        <% } %>
     </main>
     <%- include('../includes/end.ejs') %>
