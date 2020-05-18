@@ -14,10 +14,13 @@
                 <h1>Order - # <%= order._id %></h1>
                 <ul class="orders__products">
                     <% order.items.forEach(item => { %>
-                    <li class="orders__products-item"><%= item.product.title %> - price: $ <%= item.product.price %> - qty: (<%= item.qty %>)</li>
+                    <li class="orders__products-item"><%= item.product.title %> - price: $ <%= item.product.price %> / qty: (<%= item.qty %>)</li>
                     <% }); %>
                     <hr>
-                    <h1>Total Price: $ <%= order.totalPrice %></h1>
+                    <div>
+                    <h1 style="display: inline;">Total Price: $ <%= order.totalPrice %></h1>
+                    <a href="/orders/<%= order._id %>" style="margin-left: 86%; text-decoration: none;display: inline; bottom: 50%;"><button class="btn"style="display: inline;">Invoice</button></a>
+                    </div>
                     <hr>
                 </ul>
             </li>

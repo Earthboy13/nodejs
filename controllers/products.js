@@ -1,4 +1,5 @@
 const Product = require('../models/product'),
+    fileAction = require('../util/file'),
     { validationResult } = require('express-validator/check');
 
 
@@ -8,7 +9,8 @@ exports.deleteProduct = (req, res, next) => {
     .then(result => {
         //console.log(result);
         if (result) {
-            //console.log(result);
+            console.log(result.imgUrl.slice(1));
+            fileAction.deleteFile(result.imgUrl.slice(1));
             res.status(204).redirect('/admin/products');
         }
         else {
@@ -37,7 +39,6 @@ exports.postAddProduct = (req, res, next) => {
             errorMessage: message,
             oldinput: {
                 title: req.body.title,
-                imgUrl: req.body.imgUrl,
                 description: req.body.description,
                 price: req.body.price,
                 userId: req.user._id
@@ -47,12 +48,14 @@ exports.postAddProduct = (req, res, next) => {
 
     const param = {
         title: req.body.title,
-        imgUrl: req.body.imgUrl,
+        imgUrl: '\\' + req.file.path,
         description: req.body.description,
         price: req.body.price,
         userId: req.user._id
     };
     //req.session.user.createProduct(param)
+    console.log('\\' + req.file.path);
+
     const product = new Product(param);
     product.save().then(result => {
         //console.log(result);
@@ -82,7 +85,6 @@ exports.postEditProduct = (req, res, next) => {
             product: {
                 _id: req.body.id,
                 title: req.body.title,
-                imgUrl: req.body.imgUrl,
                 description: req.body.description,
                 price: req.body.price,
                 userId: req.user._id
@@ -92,18 +94,22 @@ exports.postEditProduct = (req, res, next) => {
     
     const param = {
         title: req.body.title,
-        imgUrl: req.body.imgUrl,
         description: req.body.description,
         price: req.body.price,
-        id: req.body.id
     };
+    if(req.file)
+    {
+        param.imgUrl = '\\' + req.file.path;
+    }
+        
     //req.session.user.updateProduct(param, { where: { id: req.body.id } })
     //const product = new Product(param);
     //product.edit()
-    Product.findOneAndUpdate({ _id: req.body.id, userId: req.user._id }, param, { new: true})
+    Product.findOneAndUpdate({ _id: req.body.id, userId: req.user._id }, param, { new: false})
     .then(result => {
             if(result)
             {
+              fileAction.deleteFile(result.imgUrl.slice(1));
               console.log('again update');
               //console.log(result);
               res.status(202).redirect('/admin/products');  
@@ -129,7 +135,6 @@ exports.getAddProduct = (req, res, next) => {
         errorMessage: [],
         oldinput: {
             title: '',
-            imgUrl: '',
             description: '',
             price: '',
             userId: ''
@@ -150,7 +155,8 @@ exports.getEditProduct = (req, res, next) => {
             res.render(script, {
                 product: prod,
                 docTitle: docTitle,
-                path: path
+                path: path,
+                errorMessage: []
             });
         }
         else {

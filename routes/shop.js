@@ -13,6 +13,7 @@ router.get('/cart', authMiddleWare, cartControl.getCart);
 router.post('/cart', authMiddleWare, cartControl.postCart);
 
 router.get('/orders', authMiddleWare, shopControl.getOrders);
+router.get('/orders/:orderId', authMiddleWare, shopControl.getInvoice);
 router.post('/create-order', authMiddleWare, shopControl.postOrders);
 
 

@@ -9,7 +9,7 @@ const uri = 'mongodb+srv://Earthboy13:0E23C784@nodejs-db-orfyf.gcp.mongodb.net/n
       errorControl = require('./controllers/errors'),
       csrf = require('csurf'),
       flash = require('connect-flash'),
-      
+      multer = require('multer');
       rootDir = require('./util/path'),
       mongoose = require('mongoose'),
       session = require('express-session'),
@@ -24,14 +24,33 @@ const app = express(),
         collection: 'sessions'
       }),
       csifProtection = csrf()
-      
-      ;
+      fileStorage = multer.diskStorage({
+          destination: (req, file , cb) => {
+            cb(null, 'images');
+          },
+          filename: (req, file, cb) => {
+              let time = (new Date()).toISOString();
+              time = time.split(':')[0] + '-' +time.split(':')[1] ;
+              console.log(time);
+              console.log(typeof time);
+              cb(null, time + '--' + file.originalname);
+          }
+      });
+      fileFilter = 
+          (req, file, cb) => {
+              if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg')
+                cb(null, true);
+              else
+                cb(null, false);
+          };
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('img'));
 app.use(express.static(path.join(rootDir, 'public')));
+app.use('/images',express.static(path.join(rootDir, 'images')));
 app.use(session({
     secret: 'my-secret',
     resave: false,
@@ -50,19 +69,22 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
     if (!req.session.user) {
+        //req.session.isLoggedIn = false;
         return next();
     }
     User.findById(req.session.user._id)
         .then(user => {
             if (!user) {
+                //req.session.isLoggedIn = false;
                 return next();
             }
+            //req.session.isLoggedIn = true;
             req.user = user;
             next();
         })
         .catch(err => {
             console.log(err);
-            next(new Error(err));
+           // next(new Error(err));
         });
 });
 
@@ -78,10 +100,11 @@ app.get('/500', errorControl.somethignWentWrong);
 
 app.use(errorControl.notFound);
 
-app.use((error, req, res, next) => {
+/* app.use((error, req, res, next) => {
     //res.status(error.httpStatusCode).reder
-    res.status(500).render('500', { docTitle: "Oops", path: '' });
-});
+    console.log(error);
+    res.status(500).render('500', { docTitle: "Oops", path: '', isLoggedIn: false });
+}); */
 
 mongoose
 .connect(
