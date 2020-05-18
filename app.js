@@ -43,22 +43,30 @@ app.use(csifProtection);
 app.use(flash());
 
 app.use((req, res, next) => {
+    res.locals.isLoggedIn = req.session.isLoggedIn;
+    res.locals.csrfToken = req.csrfToken();
+    next();
+});
+
+app.use((req, res, next) => {
     if (!req.session.user) {
         return next();
     }
     User.findById(req.session.user._id)
         .then(user => {
+            if (!user) {
+                return next();
+            }
             req.user = user;
             next();
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            console.log(err);
+            next(new Error(err));
+        });
 });
 
-app.use((req, res, next) => {
-    res.locals.isLoggedIn = req.session.isLoggedIn;
-    res.locals.csrfToken = req.csrfToken();
-    next();
-});
+
 
 app.use(authRoutes.routes);
 
@@ -66,7 +74,14 @@ app.use("/admin", adminRoutes.routes);
 app.use(shopRoutes.routes);
 app.use(mainRoutes.routes);
 
+app.get('/500', errorControl.somethignWentWrong);
+
 app.use(errorControl.notFound);
+
+app.use((error, req, res, next) => {
+    //res.status(error.httpStatusCode).reder
+    res.status(500).render('500', { docTitle: "Oops", path: '' });
+});
 
 mongoose
 .connect(

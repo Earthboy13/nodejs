@@ -13,40 +13,40 @@
             <% if (path === '/login') { %>
             <div class="form-control">
                 <label for="username">Username/E-mail</label>
-                <input type="text" name="username" id="username">
+                <input type="text" name="username" id="username" value="<%=oldinput.username%>">
             </div>
             <div class="form-control">
                 <label for="password">Password</label>
-                <input type="password" name="password" id="password">
+                <input type="password" name="password" id="password" value="<%=oldinput.password%>">
             </div>
             <% } else { %>
             <div class="form-control">
                 <label for="username">Username</label>
-                <input type="text" name="username" id="username">
+                <input class="<%= errorParams.find(p => p === 'username') ? 'invalid' : ''%>" type="text" name="username" id="username" value="<%=oldinput.username%>">
             </div>
             <div class="form-control">
                 <label for="email">E-mail</label>
-                <input type="email" name="email" id="email">
+                <input class="<%= errorParams.find(p => p === 'email') ? 'invalid' : ''%>" type="email" name="email" id="email" value="<%=oldinput.email%>">
             </div>
             <div class="form-control">
                 <label for="password">Password</label>
-                <input type="password" name="password" id="password">
+                <input class="<%= errorParams.find(p => p === 'password') ? 'invalid' : ''%>" type="password" name="password" id="password" value="<%=oldinput.password%>">
             </div>
             <div class="form-control">
                 <label for="cpassword">Confirm Password</label>
-                <input type="password" name="cpassword" id="cpassword">
+                <input class="<%= errorParams.find(p => p === 'cpassword') ? 'invalid' : ''%>" type="password" name="cpassword" id="cpassword" value="<%=oldinput.cpassword%>">
             </div>
             <div class="form-control">
                 <label for="first_name">First Name</label>
-                <input type="text" name="first_name" id="first_name">
+                <input class="<%= errorParams.find(p => p === 'first_name') ? 'invalid' : ''%>" type="text" name="first_name" id="first_name" value="<%=oldinput.first_name%>">
             </div>
             <div class="form-control">
                 <label for="last_name">Last Name</label>
-                <input type="text" name="last_name" id="last_name">
+                <input class="<%= errorParams.find(p => p === 'last_name') ? 'invalid' : ''%>" type="text" name="last_name" id="last_name" value="<%=oldinput.last_name%>">
             </div>
             <div class="form-control">
                 <label for="dob">Date Of Birth(DOB)</label>
-                <input type="date" name="dob" id="dob">
+                <input class="<%= errorParams.find(p => p === 'dob') ? 'invalid' : ''%>" type="date" name="dob" id="dob" value="<%=oldinput.dob%>">
             </div>
             <% } %>
             <input type="hidden" name="_csrf" value="<%=csrfToken%>">

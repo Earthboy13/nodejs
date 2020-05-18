@@ -3,7 +3,7 @@ const User = require('../models/user'),
     bcrypt = require('bcryptjs'),
     nodemailer = require('nodemailer'),
     sendgridTransport = require('nodemailer-sendgrid-transport'),
-
+    { validationResult } = require('express-validator/check'),
     transporter = nodemailer.createTransport(sendgridTransport({
         auth: {
             api_key: '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'
@@ -11,24 +11,31 @@ const User = require('../models/user'),
     }));
 
 module.exports.postLogin = (req, res, next) => {
-    let hashed = undefined;
-    console.log(req.body.password);
-    console.log(req.body.username);
 
+    //console.log(req.body.password);
+    //console.log(req.body.username);
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        console.log(errors.array());
+        let message = errors.array().map(i => {
+            return i.msg;
+        });
+        console.log(message);
+        return res.status(422).render('auth/login', {
+            docTitle: 'Login',
+            path: '/login',
+            errorMessage: message,
+            oldinput: {
+                username: req.body.username,
+                password: req.body.password,
+            }
+        });
+    }
 
 
     User.findOne()
         .or([{ email: req.body.username }, { username: req.body.username }])
         .then(user => {
-            console.log('user found');
-
-            console.log(user);
-            //console.log(user.password);
-
-            if (user === null) {
-                req.flash('error', 'Invalid username or password');
-                return res.redirect('/login');
-            }
             bcrypt.compare(req.body.password, user.password)
                 .then(result => {
                     if (result) {
@@ -41,89 +48,129 @@ module.exports.postLogin = (req, res, next) => {
                         });
                     } else {
                         req.flash('error', 'Invalid username or password');
-                        res.redirect('/login');
+                        return res.status(422).render('auth/login', {
+                            docTitle: 'Login',
+                            path: '/login',
+                            errorMessage: ['Invalid username or password'],
+                            oldinput: {
+                                username: req.body.username,
+                                password: req.body.password,
+                            }
+                        });
                     }
                 }).catch(err => {
                     console.log(err);
-                    res.redirect('/login');
+                    const error = new Error(err);
+                    error.httpStatusCode = 500;
+                    return next(error);
                 });
-
-
-
         })
+
         .catch(err => {
             console.log(err);
-            res.redirect('/');
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 }
 
 module.exports.postSignUp = (req, res, next) => {
 
+
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        console.log(errors.array());
+        let message = errors.array().map(i => {
+            return i.msg;
+        });
+        let errorParams = errors.array().map(i => {
+            return i.param;
+        });
+        console.log(message);
+        console.log(errorParams);
+        console.log(errorParams.find(p => p === 'username'));
+        
+        return res.status(422).render('auth/login', {
+            docTitle: 'Sign Up',
+            path: '/sign-up',
+            errorMessage: message,
+            oldinput: {
+                username: req.body.username,
+                password: req.body.password,
+                cpassword: req.body.cpassword,
+                first_name: req.body.first_name,
+                last_name: req.body.last_name,
+                email: req.body.email,
+                dob: req.body.dob,
+            },
+            errorParams: errorParams
+        });
+    }
     let hashed = undefined;
 
-    User.findOne().or({ email: req.body.email }, { username: req.body.username })
+
+
+    //console.log(req.body.password);
+
+    return bcrypt.hash(req.body.password, 12)
+        .then(hash => {
+            console.log('over here');
+            console.log(hash.toString());
+            hashed = hash.toString();
+            const param = {
+                username: req.body.username,
+                password: hashed,
+                first_name: req.body.first_name,
+                last_name: req.body.last_name,
+                email: req.body.email,
+                dob: req.body.dob,
+                cart: { cartItem: [], totalPrice: 0 }
+            };
+            console.log(param);
+            return User.create(param);
+        })
+        .then(result => {
+            console.log('after making user');
+
+            console.log(result);
+            return User.findOne()
+                .where('username').equals(req.body.username)
+                .where('password').equals(hashed);
+        })
         .then(user => {
-            if (user !== null) {
-                req.flash('error', 'Username or E-mail already in use.');
-                return res.redirect('/sign-up');
-            }
-            console.log('over there');
+            console.log('user found?');
+
             console.log(user);
-            console.log(req.body.password);
+            req.session.user = user;
+            //console.log(req.user);
+            req.session.isLoggedIn = true;
+            req.session.save(err => {
+                console.log(err);
+                res.redirect('/');
+            });
+            return transporter.sendMail({
+                to: req.body.email,
+                from: 'osmanaibrahim1@gmail.com',
+                subject: 'SignUp',
+                html: '<h1>Welcome to the monkey ninja world.</h1>'
+            });
 
-            return bcrypt.hash(req.body.password, 12).then(hash => {
-                console.log('over here');
-                console.log(hash.toString());
-                hashed = hash.toString();
-                const param = {
-                    username: req.body.username,
-                    password: hashed,
-                    first_name: req.body.first_name,
-                    last_name: req.body.last_name,
-                    email: req.body.email,
-                    dob: req.body.dob,
-                    cart: { cartItem: [], totalPrice: 0 }
-                };
-                console.log(param);
-                return User.create(param);
-            })
-                .then(result => {
-                    console.log('after making user');
-
-                    console.log(result);
-                    return User.findOne()
-                        .where('username').equals(req.body.username)
-                        .where('password').equals(hashed);
-                })
-                .then(user => {
-                    console.log('user found?');
-
-                    console.log(user);
-                    req.session.user = user;
-                    //console.log(req.user);
-                    req.session.isLoggedIn = true;
-                    req.session.save(err => {
-                        console.log(err);
-                        res.redirect('/');
-                    });
-                    return transporter.sendMail({
-                        to: req.body.email,
-                        from: 'osmanaibrahim1@gmail.com',
-                        subject: 'SignUp',
-                        html: '<h1>Welcome to the monkey ninja world.</h1>'
-                    });
-                })
         })
         .catch(err => {
             console.log(err);
-            res.redirect('/');
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 };
 
 module.exports.postLogout = (req, res, next) => {
     req.session.destroy((err) => {
         console.log(err);
-        res.redirect('/');
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
     });
 
 };
@@ -134,7 +181,11 @@ module.exports.getLogin = (req, res, next) => {
     res.render('auth/login', {
         docTitle: 'Login',
         path: '/login',
-        errorMessage: req.flash('error')
+        errorMessage: req.flash('error'),
+        oldinput: {
+            username: req.body.username,
+            password: req.body.password
+        }
     });
 };
 
@@ -144,7 +195,17 @@ module.exports.getSignUp = (req, res, next) => {
     res.render('auth/login', {
         docTitle: 'Sign Up',
         path: '/sign-up',
-        errorMessage: req.flash('error')
+        errorMessage: req.flash('error'),
+        oldinput: {
+            username: '',
+            password: '',
+            cpassword: '',
+            first_name: '',
+            last_name: '',
+            email: '',
+            dob: ''
+        },
+        errorParams: []
     });
 };
 
@@ -177,7 +238,12 @@ module.exports.getResetToken = (req, res, next) => {
                 res.redirect('/404');
             }
         })
-        .catch(err => console.log(err))
+        .catch(err => {
+            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        })
 
 };
 
@@ -190,7 +256,7 @@ module.exports.postNewPassword = (req, res, next) => {
 
             console.log(user);
             console.log(result);
-            
+
             //console.log(user.password);
 
             if (user === null) {
@@ -207,11 +273,18 @@ module.exports.postNewPassword = (req, res, next) => {
             }).then(result => {
                 return res.redirect('/login');
             })
-                .catch(err => console.log(err))
+            .catch(err => {
+                console.log(err);
+                const error = new Error(err);
+                error.httpStatusCode = 500;
+                return next(error);
+            })
         })
         .catch(err => {
             console.log(err);
-            res.redirect('/');
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 };
 
@@ -246,7 +319,7 @@ module.exports.postReset = (req, res, next) => {
                             console.log('saved token');
                             req.flash('reset', 'Reset Email has been sent.');
                             res.redirect('/reset');
-                            
+
                             return transporter.sendMail({
                                 to: req.body.email,
                                 from: 'osmanaibrahim1@gmail.com',
@@ -254,7 +327,7 @@ module.exports.postReset = (req, res, next) => {
                                 html: `
                                 <p>You request a password reset.</p>
                                 <p>CLick link to reset password. Link expries in 15 minutes.</p>
-                                <a href="http://localhost/reset/${token}">Reset</a>
+                                <a href="http://master.themonkey.ninja/reset/${token}">Reset</a>
                                 `
                             });
 
@@ -267,7 +340,9 @@ module.exports.postReset = (req, res, next) => {
         })
         .catch(err => {
             console.log(err);
-            res.redirect('/');
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 
 };
