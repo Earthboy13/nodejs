@@ -100,11 +100,11 @@ app.get('/500', errorControl.somethignWentWrong);
 
 app.use(errorControl.notFound);
 
-/* app.use((error, req, res, next) => {
+app.use((error, req, res, next) => {
     //res.status(error.httpStatusCode).reder
     console.log(error);
     res.status(500).render('500', { docTitle: "Oops", path: '', isLoggedIn: false });
-}); */
+});
 
 mongoose
 .connect(

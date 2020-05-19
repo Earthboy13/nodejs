@@ -22,7 +22,7 @@ validate = [
         })
         .trim(),
     body('description')
-        .isAlphanumeric().withMessage('Description must be made of letters and/or numbers.')
+        .isString().withMessage('Description must be made of letters and/or numbers.')
         .isLength({ min: 3 }).withMessage('Description must be at least 3 charaters long.')
         .isLength({ max: 256 }).withMessage('Description too long.')
         .trim()

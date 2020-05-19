@@ -124,16 +124,31 @@ exports.postOrders = (req, res, next) => {
 }
 
 exports.getAllProducts = (req, res, next) => {
+    let page = req.query.page || 1;
+    console.log(page);
     
+    const ITEM_PER_PAGE = 1;
+    let totalProducts;
     const path = '/products', docTitle = 'Shop', script = 'shop/product-list';
-    //Task.getAll(Product, script, docTitle, path, res);
-    Product.find().then(products => {
+    Product.find().countDocuments().then(result => {
+        totalProducts = result;
+        return Product.find()
+            .skip((page - 1) * ITEM_PER_PAGE)
+            .limit(ITEM_PER_PAGE);
+    }).then(products => {
         //console.log('find all');  
         //console.log(products);
         res.render(script, {
             prods: products,
             docTitle: docTitle,
-            path: path
+            path: path,
+            totalProducts: totalProducts,
+            hasNextPage: (totalProducts > (page * ITEM_PER_PAGE)),
+            hasPreviousPage: page > 1,
+            currentPage: page,
+            nextPage: page - 1 + 2,
+            previousPage: page - 1,
+            lastPage: Math.ceil(totalProducts/ ITEM_PER_PAGE)
         });
     }).catch(err => {
         console.log(err);

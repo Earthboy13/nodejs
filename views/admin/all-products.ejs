@@ -39,8 +39,23 @@
             </article>
             <% } %>
         </div>
+        <section class="pagination">
+            <% if(hasPreviousPage) {%>
+                <% if(previousPage > 1) {%>
+                    <a href="/admin/products?page=<%= previousPage %>">Previous</a>
+                <% } %>
+                <a href="/admin/products?page=<%= previousPage %>"><%= previousPage %></a>
+            <% } %>
+            <a href="/admin/products?page=<%= currentPage %>"><%= currentPage %></a>
+            <% if(hasNextPage) {%>
+                <a href="/admin/products?page=<%= nextPage %>"><%= nextPage %></a>
+                <% if( nextPage < lastPage) {%>
+                    <a href="/admin/products?page=<%= nextPage %>">Next</a>
+                <% }%>
+            <% } %>
+        </section>
         <% } else { %>
         <h1>No Products</h1>
         <% } %>
     </main>
-<%- include('../includes/end.ejs') %>
+    <%- include('../includes/end.ejs') %>
