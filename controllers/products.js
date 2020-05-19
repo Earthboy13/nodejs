@@ -5,23 +5,21 @@ const Product = require('../models/product'),
 
 exports.deleteProduct = (req, res, next) => {
     //req.session.user.destroyProduct({ where: { id: req.body.id } })
-    Product.findOneAndDelete({ _id: req.body.id, userId: req.user._id })
+    Product.findOneAndDelete({ _id: req.params.id, userId: req.user._id })
     .then(result => {
         //console.log(result);
         if (result) {
             console.log(result.imgUrl.slice(1));
             fileAction.deleteFile(result.imgUrl.slice(1));
-            res.status(204).redirect('/admin/products');
+            res.status(204).json({message: 'Success'});
         }
         else {
-            res.status(401).redirect('/');
+            res.status(401).json({ message: 'Unauthuerized' });
         }
         
     }).catch(err => {
         console.log(err);
-        const error = new Error(err);
-        error.httpStatusCode = 500;
-        return next(error);
+        res.status(500).json({ message: 'Server-side Failure' });
     });
 }
 
@@ -195,9 +193,9 @@ exports.getAdminProducts = (req, res, next) => {
     
     const path = '/admin/products', docTitle = 'Admin Shop', script = 'admin/all-products';
     let page = req.query.page || 1;
-    console.log(page);
+    //console.log(page);
 
-    const ITEM_PER_PAGE = 1;
+    const ITEM_PER_PAGE = 2;
     let totalProducts;
     Product.find({ userId: req.user._id }).countDocuments().then(result => {
         totalProducts = result;

@@ -125,9 +125,9 @@ exports.postOrders = (req, res, next) => {
 
 exports.getAllProducts = (req, res, next) => {
     let page = req.query.page || 1;
-    console.log(page);
+    //console.log(page);
     
-    const ITEM_PER_PAGE = 1;
+    const ITEM_PER_PAGE = 2;
     let totalProducts;
     const path = '/products', docTitle = 'Shop', script = 'shop/product-list';
     Product.find().countDocuments().then(result => {

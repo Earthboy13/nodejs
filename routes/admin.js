@@ -28,11 +28,11 @@ validate = [
         .trim()
 ];
     
-router.post('/del-product', authMiddleWare, prodControl.deleteProduct);
-router.get('/add-product', authMiddleWare, prodControl.getAddProduct);
 
+router.get('/add-product', authMiddleWare, prodControl.getAddProduct);
 router.post('/add-product', authMiddleWare, validate, prodControl.postAddProduct);
 
+router.delete('/products/:id', authMiddleWare, prodControl.deleteProduct);
 router.get('/products', authMiddleWare, prodControl.getAdminProducts);
 router.get('/products/detail', authMiddleWare, prodControl.getAdminProduct);
 
