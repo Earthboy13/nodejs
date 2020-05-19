@@ -327,7 +327,7 @@ module.exports.postReset = (req, res, next) => {
                                 html: `
                                 <p>You request a password reset.</p>
                                 <p>CLick link to reset password. Link expries in 15 minutes.</p>
-                                <a href="http://master.themonkey.ninja/reset/${token}">Reset</a>
+                                <a href="`+ req.protocol + '://' + req.get('host') +`/reset/${token}">Reset</a>
                                 `
                             });
 
